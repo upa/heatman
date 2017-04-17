@@ -32,7 +32,7 @@ DEFAULT_SAVED_RTTS_NUM = 128 # Number of saved ping resulsts
 
 DEFAULT_EXPORT_INTERVAL = 10
 DEFAULT_PROBE_INTERVAL = 1
-DEFAULT_REFRESH_INTERVAL = 600
+DEFAULT_REFRESH_INTERVAL = 60
 
 
 FAILED_EXPORT_INTERVAL = 60 # if export failed, try after 60 sec
@@ -142,12 +142,12 @@ class PingTarget :
 
 
     def __init__(self, name, addr, osname,
-                 max = DEFAULT_SAVED_RTTS_NUM, timeout = 1) :
+                 saved_rtts_num = DEFAULT_SAVED_RTTS_NUM, timeout = 1) :
 
         self.name = name
         self.addr = addr
 
-        self.max = max
+        self.saved_rtts_num = saved_rtts_num
 
         self.lossrate = 0.0 # rate of packet loss
         self.lost = 0.0 # sum of lost packet
@@ -185,8 +185,8 @@ class PingTarget :
             self.lossrate = self.lost / self.snt * 100.0
             self.result.insert(0, -1)
 
-        # trim over 'max' result
-        while len(self.result) > max :
+        # trim over saved_rtts_num result
+        while len(self.result) > self.saved_rtts_num :
             self.result.pop()
 
         return
@@ -244,7 +244,7 @@ class HeatmanProbe :
     def add_target(self, target_name, target_addr) :
 
         self.targets.append(PingTarget(target_name, target_addr,
-                            self.osname, max = self.saved_rtts_num))
+                            self.osname, saved_rtts_num = self.saved_rtts_num))
         return
         
 
@@ -362,6 +362,9 @@ class HeatmanProbe :
         self.export_interval = config["export_interval"]
         self.export_configured_interval = config["export_interval"]
         self.saved_rtts_num = config["saved_rtts_num"]
+
+        for target in self.targets :
+            target.saved_rtts_num = self.saved_rtts_num
 
         # find new targets
         for new_target in config["targets"]:

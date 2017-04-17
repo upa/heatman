@@ -123,30 +123,39 @@ function result_to_tr(result)
 	var graph = "";
 	for (var x = 0; x < result["rtts"].length; x++) {
 		if (result["rtts"][x] < 0) {
-			graph += "<span class='boxfailed'>▇</span>";
+			graph += "<span class='boxfailed";
 		} else if (result["rtts"][x] < 10) {
-			graph += "<span class='box10ms'>▇</span>";
+			graph += "<span class='box10ms";
 		} else if (result["rtts"][x] < 20) {
-			graph += "<span class='box20ms'>▇</span>";
+			graph += "<span class='box20ms";
 		} else if (result["rtts"][x] < 30) {
-			graph += "<span class='box30ms'>▇</span>";
+			graph += "<span class='box30ms";
 		} else if (result["rtts"][x] < 40) {
-			graph += "<span class='box40ms'>▇</span>";
+			graph += "<span class='box40ms";
 		} else if (result["rtts"][x] < 50) {
-			graph += "<span class='box50ms'>▇</span>";
+			graph += "<span class='box50ms";
 		} else if (result["rtts"][x] < 60) {
-			graph += "<span class='box60ms'>▇</span>";
+			graph += "<span class='box60ms";
 		} else if (result["rtts"][x] < 70) {
-			graph += "<span class='box70ms'>▇</span>";
+			graph += "<span class='box70ms";
 		} else if (result["rtts"][x] < 80) {
-			graph += "<span class='box80ms'>▇</span>";
+			graph += "<span class='box80ms";
 		} else if (result["rtts"][x] < 90) {
-			graph += "<span class='box90ms'>▇</span>";
+			graph += "<span class='box90ms";
 		} else if (result["rtts"][x] < 100) {
-			graph += "<span class='box100ms'>▇</span>";
+			graph += "<span class='box100ms";
 		} else { /* over 100ms */
-			graph += "<span class='boxover100ms'>▇</span>";
+			graph += "<span class='boxover100ms";
 		}
+
+		if ((x + 1) % 10 == 0) {
+			graph += " box-border'>";
+		} else {
+			graph += "'>";
+		}
+
+		graph += "▇</span>";
+
 	}
 	tr.append($("<td>").html(graph));
 
