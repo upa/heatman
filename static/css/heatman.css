@@ -1,0 +1,73 @@
+/*
+ * heatman css
+ */
+
+
+body {
+	font-family: Consolas, Courier, Monaco, monospace;
+	font-size: 14.5px;
+	line-height: 1.2;
+	
+	padding: 30px 30px 30px 30px;
+	background-color: #212121;
+	color: #eeeeee;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	margin: 0 0 0 0;
+	font-weight: normal;
+	font-size: 1.8em;
+}
+
+#header {
+	margin: 0 0 2em 0;
+}
+
+.color-chart {
+	border-bottom: 0.5px solid gray;
+}
+
+.probe {
+	margin: 30px 0 30px 0;
+}
+
+h3 {
+	font-size: 1.0em;
+	margin: 1.0em 0 0.5em;
+}
+
+.result {
+	vertical-align: bottom;
+	color: #00dd00;
+}
+
+.target {
+	text-align: left;
+}
+
+table {
+	border: none;
+}
+table tr.reference td {
+	text-align: left;
+	border-bottom: 0.5px solid gray;
+}
+
+table tr td {
+	padding: 1px 5px 1px 5px;
+	text-align: right;
+}
+
+
+.box10ms { color: #BEDFC2; padding: 0 0.5px 0 0.5px; }
+.box20ms { color: #89C997; padding: 0 0.5px 0 0.5px; }
+.box30ms { color: #39A869; padding: 0 0.5px 0 0.5px; }
+.box40ms { color: #007538; padding: 0 0.5px 0 0.5px; }
+.box50ms { color: #004714; padding: 0 0.5px 0 0.5px; }
+.box60ms { color: #BBCCE9; padding: 0 0.5px 0 0.5px; }
+.box70ms { color: #88ABDA; padding: 0 0.5px 0 0.5px; }
+.box80ms { color: #6C9BD2; padding: 0 0.5px 0 0.5px; }
+.box90ms { color: #0D649D; padding: 0 0.5px 0 0.5px; }
+.box100ms { color: #204A70; padding: 0 0.5px 0 0.5px; }
+.boxover100ms { color: #00345B; padding: 0 0.5px 0 0.5px; }
+.boxfailed { color: #C7000B; padding: 0 0.5px 0 0.5px; }

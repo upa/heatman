@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title> heatman (ver {{v['version']}})</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="/static/css/heatman.css">
+    <script src="static/js/jquery-3.2.1.min.js"></script>
+    <script src="static/js/heatman.js"></script>
+  </head>
+
+  <body>
+
+    <div id="header">
+      <h1> heatman. version {{ v['version'] }}. </h1>
+    </div>
+
+    <div id="body">
+      
+      <div class="color-chart">
+	Coloar chart (less than X ms):
+	10:<span class="box10ms">▇</span>,
+	20:<span class="box20ms">▇</span>,
+	30:<span class="box30ms">▇</span>,
+	40:<span class="box40ms">▇</span>,
+	50:<span class="box50ms">▇</span>,
+	60:<span class="box60ms">▇</span>,
+	70:<span class="box70ms">▇</span>,
+	80:<span class="box80ms">▇</span>,
+	90:<span class="box90ms">▇</span>,
+	100:<span class="box100ms">▇</span>,
+	over 100ms:<span class="boxover100ms">▇</span>,
+	Failed:<span class="boxfailed">▇</span>
+      </div>
+
+    </div>
+
+    <script>
+      refresh_result("/rest/get/result");
+      setInterval("refresh_result('/rest/get/result')",
+                  {{v.browser_update_interval}});
+    </script>
+
+  </body>
+</html>
+
+
