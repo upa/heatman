@@ -52,12 +52,13 @@ table {
 
 table tr.reference td {
 	text-align: left;
+	padding: 0 0 0 1em;
 	border-bottom: 0.5px solid #aaaaaa;
 }
 
 table tr td {
-	padding: 0px 3px 0px 3px;
 	text-align: right;
+	padding: 0 0 0 1em;
 }
 
 
