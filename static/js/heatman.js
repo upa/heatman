@@ -62,7 +62,7 @@ function refresh_result(url) {
 }
 
 function delete_probe_result(probe) {
-	$("." + probe["probe_name"]).empty();
+	$("." + probe["probe_name"]).remove();
 }
 
 function add_probe_result(probe) {
