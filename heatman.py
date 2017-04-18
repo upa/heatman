@@ -30,7 +30,7 @@ DEFAULT_PROBE_INTERVAL = 1
 DEFAULT_SAVED_RTTS_NUM = 128
 
 index_html_values = { "version" : "0.0.1",
-                      "browser_update_interval" : 10000 }
+                      "browser_update_interval" : 10 }
 
 
 
@@ -84,7 +84,7 @@ class HeatmanServer() :
             "probe_interval" : str(DEFAULT_PROBE_INTERVAL),
             "export_interval" : str(DEFAULT_EXPORT_INTERVAL),
             "saved_rtts_num" : str(DEFAULT_SAVED_RTTS_NUM),
-            "browser_update_interval" : str(10000),
+            "browser_update_interval" : str(10),
             }
 
         conf = ConfigParser.SafeConfigParser(defaults)
@@ -203,8 +203,9 @@ if __name__ == "__main__" :
     heatman = HeatmanServer(sys.argv[1])
     heatman.print_for_debug()
 
+    # miliseconds
     index_html_values["browser_update_interval"] = \
-        heatman.browser_update_interval
+        heatman.browser_update_interval * 1000
 
     app.run(host = heatman.bind_addr, port = heatman.bind_port, debug = True)
 

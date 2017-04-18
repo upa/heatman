@@ -62,7 +62,7 @@ function refresh_result(url) {
 }
 
 function delete_probe_result(probe) {
-	$("." + probe["probe_name"]).remove();
+	$("." + probe["probe_name"].replace(/\./g, '-')).remove();
 }
 
 function add_probe_result(probe) {
@@ -70,7 +70,7 @@ function add_probe_result(probe) {
 	var div = $("<div>");
 
 	div.addClass("probe");
-	div.addClass(probe["probe_name"])
+	div.addClass(probe["probe_name"].replace(/\./g, '-'));
 	div.append($("<h3>")
 		   .html("Ping source: " + probe["probe_name"] +
 			 " (" + probe["probe_addr"] + "), updated at " +
