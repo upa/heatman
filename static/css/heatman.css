@@ -62,16 +62,12 @@ table tr td {
 }
 
 
-.box10ms { color: #BEDFC2; }
-.box20ms { color: #89C997; }
-.box30ms { color: #39A869; }
-.box40ms { color: #007538; }
-.box50ms { color: #004714; }
-.box60ms { color: #BBCCE9; }
-.box70ms { color: #88ABDA; }
-.box80ms { color: #6C9BD2; }
-.box90ms { color: #0D649D; }
-.box100ms { color: #204A70; }
-.boxover100ms { color: #00345B; }
-.boxfailed { color: #C7000B; }
+.box1 { color: rgb(247, 252, 245); }
+.box2 { color: rgb(199, 233, 192); }
+.box3 { color: rgb(162, 217, 155); }
+.box4 { color: rgb(116, 196, 118); }
+.box5 { color: rgb(65, 171, 93); }
+.box6 { color: rgb(33, 137, 68); }
+.boxover { color: rgb(0, 90, 50); }
+.boxfailed { color: rgb(227, 26, 28); }
 .box-border { margin: 0 4px 0 0; }
