@@ -91,6 +91,12 @@ class HeatmanServer() :
         conf.read(configfile)
 
 
+        try :
+            self.secret = conf.get("settings", "secret")
+        except ConfigParser.NoOptionError :
+            print "'secret' in section 'settings' must be configured"
+            sys.exit(1)
+
         self.bind_addr = conf.get("settings", "bind_addr")
         self.bind_port = int(conf.get("settings", "bind_port"))
         self.probe_interval = int(conf.get("settings", "probe_interval"))
@@ -165,7 +171,12 @@ def rest_post_result_probe(probe_name) :
         content = { "error" : "probe node '%s' does not exist" % probe_name}
         return jsonify(content), 404
 
+    if request.json["secret"] != heatman.secret :
+        content = { "error"  : "invalid secret key"}
+        return jsonify(content), 401
+
     probe.probe_result = request.json
+    probe.probe_result.pop("secret")
     
     return jsonify(res = "success")
 

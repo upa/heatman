@@ -217,7 +217,7 @@ class PingTarget :
 
 class HeatmanProbe :
 
-    def __init__(self, probe_name, probe_addr, heatman_addr) :
+    def __init__(self, probe_name, probe_addr, heatman_addr, secret) :
 
         """
         Heatman Probe.
@@ -228,6 +228,7 @@ class HeatmanProbe :
         self.probe_name = probe_name
         self.probe_addr = probe_addr
         self.heatman_addr = heatman_addr
+        self.secret = secret
         
         self.export_interval = DEFAULT_EXPORT_INTERVAL
         self.probe_interval = DEFAULT_PROBE_INTERVAL
@@ -236,7 +237,6 @@ class HeatmanProbe :
         self.targets = []
 
         self.osname = commands.getoutput("uname -s")
-
 
         return
 
@@ -285,6 +285,7 @@ class HeatmanProbe :
           "probe_name" : probe_name,
           "probe_addr" : probe_addr,
           "udpated" : "HH:MM:SS",
+          "secret" : secret_key,
           "results" : [
             {
               "name" : target_name, "addr" : target_addr,
@@ -301,6 +302,7 @@ class HeatmanProbe :
             "probe_name" : self.probe_name,
             "probe_addr" : self.probe_addr,
             "updated" : datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+            "secret" : self.secret,
             "results" : []
             }
 
@@ -445,6 +447,10 @@ if __name__ == '__main__' :
                       default = None, dest = "heatman_addr",
                       help = "address of remote heatman server")
 
+    parser.add_option("-k", "--secret-key", type = "string",
+                      default = None, dest = "secret",
+                      help = "secret key for identifying probe nodes")
+
 
     (options, args) = parser.parse_args()
 
@@ -463,6 +469,10 @@ if __name__ == '__main__' :
                       "heatman server addr '-r' must be specified")
         sys.exit(1)
 
+    if not options.secret :
+        syslog.syslog(syslog.LOG_ERR<
+                      "secret key '-k' must be specified")
+
 
 
     signal.signal(signal.SIGINT, sigint_handler)
@@ -470,7 +480,8 @@ if __name__ == '__main__' :
 
     probe = HeatmanProbe(options.probe_name,
                          options.probe_addr,
-                         options.heatman_addr)
+                         options.heatman_addr,
+                         options.secret)
 
     syslog.syslog(syslog.LOG_INFO,
                   "start heatman-probe. try to fetch config from %s..." %
