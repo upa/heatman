@@ -32,11 +32,11 @@ DEFAULT_SAVED_RTTS_NUM = 128 # Number of saved ping resulsts
 
 DEFAULT_EXPORT_INTERVAL = 10
 DEFAULT_PROBE_INTERVAL = 1
-DEFAULT_REFRESH_INTERVAL = 60
+DEFAULT_RECONFIG_INTERVAL = 60
 
 
 FAILED_EXPORT_INTERVAL = 60 # if export failed, try after 60 sec
-FAILED_REFRESH_INTERVAL = 60 # if get config failed, try after 60 sec
+FAILED_RECONFIG_INTERVAL = 60 # if get config failed, try after 60 sec
 
 
 
@@ -232,7 +232,7 @@ class HeatmanProbe :
         self.export_interval = DEFAULT_EXPORT_INTERVAL
         self.probe_interval = DEFAULT_PROBE_INTERVAL
         self.saved_rtts_num = DEFAULT_SAVED_RTTS_NUM
-        self.refresh_interval = DEFAULT_REFRESH_INTERVAL
+        self.reconfig_interval = DEFAULT_RECONFIG_INTERVAL
         self.targets = []
 
         self.osname = commands.getoutput("uname -s")
@@ -334,7 +334,7 @@ class HeatmanProbe :
         return
 
 
-    def refresh(self) :
+    def reconfig(self) :
         """
         Re-obtain config file from heatman_addr and update ping targets
         """
@@ -346,13 +346,13 @@ class HeatmanProbe :
             r = requests.get(url)
 
         except ConnectionError :
-            self.refresh_interval = FAILED_REFRESH_INTERVAL
+            self.reconfig_interval = FAILED_RECONFIG_INTERVAL
             syslog.syslog(syslog.LOG_ERR,
-                          "refresh: connction failed to %s." % url)
+                          "reconfig: connction failed to %s." % url)
             return False
 
         if r.status_code != 200 :
-            self.refresh_interval = FAILED_REFRESH_INTERVAL
+            self.reconfig_interval = FAILED_RECONFIG_INTERVAL
             syslog.syslog(syslog.LOG_ERR,
                           "get %s failed '%d'." % (url, r.status_code))
             return False
@@ -396,7 +396,7 @@ class HeatmanProbe :
             self.delete_target(deleted_target[0], deleted_target[1])
 
 
-        self.refresh_interval = DEFAULT_REFRESH_INTERVAL
+        self.reconfig_interval = DEFAULT_RECONFIG_INTERVAL
 
         return True
 
@@ -414,8 +414,8 @@ class HeatmanProbe :
             if cnt % self.export_interval == 0 :
                 self.export()
 
-            if cnt % self.refresh_interval == 0:
-                self.refresh()
+            if cnt % self.reconfig_interval == 0:
+                self.reconfig()
 
             cnt += 1
             time.sleep(1)
@@ -477,7 +477,7 @@ if __name__ == '__main__' :
                   ("http://%s/rest/get/config/%s" % 
                    (options.heatman_addr, options.probe_name)))
 
-    while not probe.refresh() :
+    while not probe.reconfig() :
         time.sleep(10)
 
 

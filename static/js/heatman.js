@@ -108,11 +108,11 @@ function result_to_tr(result)
 	var tr = $("<tr>");
 
 	var td = $("<td>").html(result["name"]);
-	td.addClass("target");
+	td.addClass("left");
 	tr.append(td);
 
 	var td = $("<td>").html(result["addr"]);
-	td.addClass("target");
+	td.addClass("left");
 	tr.append(td);
 
 	tr.append($("<td>").html(result["sent"]));
@@ -149,7 +149,9 @@ function result_to_tr(result)
 		graph += "▇</span>";
 
 	}
-	tr.append($("<td>").html(graph));
+	var td = $("<td>").html(graph);
+	td.addClass("left");
+	tr.append(td);
 
 	return tr;
 }
