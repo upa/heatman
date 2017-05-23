@@ -24,7 +24,8 @@ from optparse import OptionParser
 
 from datetime import datetime
 from requests.exceptions import ConnectionError
-
+from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPDigestAuth
 
 
 DEFAULT_SAVED_RTTS_NUM = 128 # Number of saved ping resulsts
@@ -217,7 +218,7 @@ class PingTarget :
 
 class HeatmanProbe :
 
-    def __init__(self, probe_name, probe_addr, heatman_addr, secret) :
+    def __init__(self, probe_name, probe_addr, heatman_addr, secret, auth) :
 
         """
         Heatman Probe.
@@ -229,6 +230,7 @@ class HeatmanProbe :
         self.probe_addr = probe_addr
         self.heatman_addr = heatman_addr
         self.secret = secret
+        self.auth = auth
         
         self.export_interval = DEFAULT_EXPORT_INTERVAL
         self.probe_interval = DEFAULT_PROBE_INTERVAL
@@ -315,6 +317,7 @@ class HeatmanProbe :
 
         try :
             r = requests.post(url,
+                              auth = auth,
                               headers = {"Content-Type" : "application/json"},
                               data = json.dumps(d))
         except ConnectionError :
@@ -345,7 +348,7 @@ class HeatmanProbe :
                                                 self.probe_name)
 
         try :
-            r = requests.get(url)
+            r = requests.get(url, auth = auth)
 
         except ConnectionError :
             self.reconfig_interval = FAILED_RECONFIG_INTERVAL
@@ -451,6 +454,21 @@ if __name__ == '__main__' :
                       default = None, dest = "secret",
                       help = "secret key for identifying probe nodes")
 
+    parser.add_option("-u", "--username", type = "string",
+                      default = None, dest = "username",
+                      help = "username of basic/digest authentication")
+
+    parser.add_option("-p", "--password", type = "string",
+                      default = None, dest = "password",
+                      help = "password of basic/digest authentication")
+
+    parser.add_option("-b", "--basic-auth", action = "store_true",
+                      default = False, dest = "basic_auth",
+                      help = "use basic auth (use with -u and -p)")
+
+    parser.add_option("-d", "--digest-auth", action = "store_true",
+                      default = False, dest = "digest_auth",
+                      help = "use digest auth (use with -u and -p)")
 
     (options, args) = parser.parse_args()
 
@@ -474,6 +492,15 @@ if __name__ == '__main__' :
                       "secret key '-k' must be specified")
 
 
+    # handle auth
+    if options.username and options.password :
+        if options.digest_auth :
+            auth = HTTPDigestAuth(options.username, options.password)
+        else :
+            auth = HTTPBasicAuth(options.username, options.password)
+    else :
+        auth = None
+
 
     signal.signal(signal.SIGINT, sigint_handler)
 
@@ -481,7 +508,8 @@ if __name__ == '__main__' :
     probe = HeatmanProbe(options.probe_name,
                          options.probe_addr,
                          options.heatman_addr,
-                         options.secret)
+                         options.secret,
+                         auth)
 
     syslog.syslog(syslog.LOG_INFO,
                   "start heatman-probe. try to fetch config from %s..." %
