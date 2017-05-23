@@ -1,2 +1,4 @@
 test*.ini
 .*.swp
+*.pyc
+*.wsgi

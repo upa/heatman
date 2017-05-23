@@ -25,6 +25,8 @@ app = Flask(__name__)
 
 heatman = None # HeatmanServer instance for access from flask 'app'
 
+DEFAULT_CONFIG = "/usr/local/etc/heatman.conf"
+
 DEFAULT_EXPORT_INTERVAL = 10
 DEFAULT_PROBE_INTERVAL = 1
 DEFAULT_SAVED_RTTS_NUM = 128
@@ -32,6 +34,7 @@ DEFAULT_SAVED_RTTS_NUM = 128
 index_html_values = { "version" : "0.0.1",
                       "browser_update_interval" : 10 }
 
+syslog.openlog("heatman", syslog.LOG_PID|syslog.LOG_PERROR, syslog.LOG_SYSLOG)
 
 
 class HeatmanProbeNode() :
@@ -69,7 +72,8 @@ class HeatmanProbeNode() :
             }
 
     def print_for_debug(self) :
-        print json.dumps(self.dump_for_config(), indent = 4)
+        syslog.syslog(syslog.LOG_INFO,
+                      json.dumps(self.dump_for_config(), indent = 4))
 
 
 class HeatmanServer() :
@@ -188,8 +192,6 @@ def rest_get_result() :
     for probe in heatman.probes :
         all_results.append(probe.dump())
 
-    print all_results
-
     return jsonify({ "result" : all_results })
 
 
@@ -197,10 +199,18 @@ def rest_get_result() :
 if __name__ == "__main__" :
 
     if len(sys.argv) < 2 :
-        print "usage: heatman [config]"
-        sys.exit(1)
+        if not os.path.exists(DEFAULT_CONFIG) :
+            print "usage: heatman [config] or %s must exist" % DEFAULT_CONFIG
+            sys.exit(1)
 
-    heatman = HeatmanServer(sys.argv[1])
+        config = DEFAULT_CONFIG
+
+    else :
+        config = sys.argv[1]
+
+
+    global heatman
+    heatman = HeatmanServer(config)
     heatman.print_for_debug()
 
     # miliseconds
@@ -208,6 +218,7 @@ if __name__ == "__main__" :
         heatman.browser_update_interval * 1000
 
     app.run(host = heatman.bind_addr, port = heatman.bind_port, debug = True)
+
 
 
     
