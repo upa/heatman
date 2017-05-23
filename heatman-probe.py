@@ -92,10 +92,11 @@ class PingResult :
 
 class Ping :
 
-    def __init__(self, addr, osname, timeout = 1) :
+    def __init__(self, addr, osname, timeout = 1, netns = None) :
 
         self.addr = addr
         self.osname = osname
+        self.netns = netns
 
         ipv = self.whichipversion(addr)
         if ipv == 4 :
@@ -118,6 +119,9 @@ class Ping :
             if ipv == 6 : p = "ping6 -i 1 -c 1"
         else :
             raise RuntimeError("unsupported OS %s"% osname)
+
+        if osname == "Linux" and self.netns :
+            p = "ip netns exec %s %s" % (self.netns, p)
 
         return p + " %s" % self.addr
         
@@ -142,11 +146,12 @@ class Ping :
 class PingTarget :
 
 
-    def __init__(self, name, addr, osname,
+    def __init__(self, name, addr, osname, netns = None,
                  saved_rtts_num = DEFAULT_SAVED_RTTS_NUM, timeout = 1) :
 
         self.name = name
         self.addr = addr
+        self.netns = netns
 
         self.saved_rtts_num = saved_rtts_num
 
@@ -160,7 +165,7 @@ class PingTarget :
         self.ttl = 0
         self.result = [] # array of RTTs (-1 means failed)
 
-        self.ping = Ping(self.addr, osname, timeout = timeout)
+        self.ping = Ping(self.addr, osname, timeout = timeout, netns = netns)
 
         return
 
@@ -218,7 +223,8 @@ class PingTarget :
 
 class HeatmanProbe :
 
-    def __init__(self, probe_name, probe_addr, heatman_addr, secret, auth) :
+    def __init__(self, probe_name, probe_addr, heatman_addr,
+                 probe_netns, secret, auth) :
 
         """
         Heatman Probe.
@@ -228,6 +234,7 @@ class HeatmanProbe :
 
         self.probe_name = probe_name
         self.probe_addr = probe_addr
+        self.probe_netns = probe_netns
         self.heatman_addr = heatman_addr
         self.secret = secret
         self.auth = auth
@@ -245,8 +252,9 @@ class HeatmanProbe :
 
     def add_target(self, target_name, target_addr) :
 
-        self.targets.append(PingTarget(target_name, target_addr,
-                            self.osname, saved_rtts_num = self.saved_rtts_num))
+        self.targets.append(PingTarget(target_name, target_addr, self.osname,
+                                       netns = self.probe_netns,
+                                       saved_rtts_num = self.saved_rtts_num))
         return
         
 
@@ -470,6 +478,10 @@ if __name__ == '__main__' :
                       default = False, dest = "digest_auth",
                       help = "use digest auth (use with -u and -p)")
 
+    parser.add_option("-s", "--netns", type = "string",
+                      default = None, dest = "netns",
+                      help = "netns where ping executed (Linux only)")
+
     (options, args) = parser.parse_args()
 
     if not options.probe_name :
@@ -508,6 +520,7 @@ if __name__ == '__main__' :
     probe = HeatmanProbe(options.probe_name,
                          options.probe_addr,
                          options.heatman_addr,
+                         options.netns,
                          options.secret,
                          auth)
 
